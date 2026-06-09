@@ -1,13 +1,12 @@
 #include <raylib.h>
 #include <stdlib.h>
-#include <string.h>
 #include <time.h> //for randomness
 
 //TODO: time the thing and print it
 
 #define WIDTH 700 
 #define HEIGHT 700
-#define COUNT 100 // XXX above 233 the visualizer is not optimized, bars will overflow window height and not show up
+#define COUNT 100 // XXX 233 is max limit before the int division for the width of the bar results in 0
 
 
 int numbers[COUNT];
@@ -18,10 +17,6 @@ void randomize_array(){
   for(int i=0; i<COUNT; i++){
     numbers[i] = rand()%(HEIGHT - 50);
   }
-}
-
-void zero_numbers(){ //zeros the whole numbers[] array
-  memset(&numbers, 0, sizeof(numbers));
 }
 
 void draw_bars(Color color, bool justone){
@@ -47,7 +42,7 @@ void swap_in_numbers(int idx1, int idx2){
 }
 
 void sorted(){
-  SetTargetFPS(30);
+  SetTargetFPS(60);
   step_i = 0;
   while(step_i != COUNT)
   {
@@ -56,7 +51,7 @@ void sorted(){
     draw_bars(LIME, true);
     EndDrawing();
 
-    step_i++;
+    step_i+=2;
   }
   ClearBackground(BLACK);
   BeginDrawing();
@@ -77,6 +72,10 @@ bool sort_step(){  //in this first demo, the sort function implements selection 
   }
   swap_in_numbers(step_i, min_idx);
   step_i++;
+  BeginDrawing();
+  ClearBackground(BLACK);
+  draw_bars(RED, false);
+  EndDrawing();
   return false;
 }
 
@@ -84,18 +83,16 @@ bool sort_step(){  //in this first demo, the sort function implements selection 
 int main(){
 	InitWindow(WIDTH, HEIGHT, "Sorter Visualizer");
   SetTargetFPS(15);
-  zero_numbers();
   randomize_array();
+  BeginDrawing();
+  draw_bars(YELLOW, false);
+  EndDrawing();
+  WaitTime(3);
+  ClearBackground(BLACK);
 	while(!WindowShouldClose()){
     if( sort_step() ){
       sorted();
       break;
-    }
-    else{
-      BeginDrawing();
-      ClearBackground(BLACK);
-      draw_bars(YELLOW, false);
-      EndDrawing();
     }
 	}
   WaitTime(5);
